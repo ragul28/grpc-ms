@@ -1,15 +1,13 @@
 package main
 
 import (
-	"log"
-	"net"
+	"fmt"
 
 	// Import the generated protobuf code
 	pb "github.com/grpc-ms/consignment-service/proto/consignment"
 
+	micro "github.com/micro/go-micro"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -36,47 +34,48 @@ func (repo *Repository) GetAll() []*pb.Consignment {
 	return repo.consignments
 }
 
-// Service - methods defined in protobuf 
+// Service - methods defined in protobuf
 type service struct {
 	repo IRepository
 }
 
 // CreateConsignment - takes context & request as argument
-func (s *service) CreateConsignment(ctx context.Context, req *pb.Consignment) (*pb.Response, error) {
+func (s *service) CreateConsignment(ctx context.Context, req *pb.Consignment, res *pb.Response) error {
 
 	// Save our consignment
 	consignment, err := s.repo.Create(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
+
 	// Return matching the `Response` message by protobuf definition.
-	return &pb.Response{Created: true, Consignment: consignment}, nil
+	res.Created = true
+	res.Consignment = consignment
+	return nil
 }
 
-func (s *service) GetConsignments(ctx context.Context, req *pb.GetRequest) (*pb.Response, error) {
+func (s *service) GetConsignments(ctx context.Context, req *pb.GetRequest, res *pb.Response) error {
 	consignments := s.repo.GetAll()
-	return &pb.Response{Consignments: consignments}, nil
+	res.Consignments = consignments
+	return nil
 }
 
 func main() {
 
 	repo := &Repository{}
 
-	// Set-up our gRPC server.
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	s := grpc.NewServer()
+	//create new srv
+	srv := micro.NewService(
+		micro.Name("consignment.service"),
+	)
 
-	// Register service with the gRPC-server, tie implementation into proto interface code
-	pb.RegisterShippingServiceServer(s, &service{repo})
+	srv.Init()
 
-	// Register reflection service gRPC-server.
-	reflection.Register(s)
+	// Register handler
+	pb.RegisterShippingServiceHandler(srv.Server(), &service{repo})
 
-	log.Println("Running on port:", port)
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	//Run server
+	if err := srv.Run(); err != nil {
+		fmt.Println(err)
 	}
 }
