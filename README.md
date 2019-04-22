@@ -14,6 +14,11 @@ Container management system,
 -   roles
 -   vessels
 
+### Building
+- To build inside gopath use GO111MODULE=on environment variable; to build outside gopath unset GO111MODULE or set to GO111MODULE=auto.
+
+- To run on alpine linux container build go-binary with CGO_ENABLED=0 flag set. 
+
 ### Reference 
 - Tutorial - [ Microservices in golang by Ewan Valentine ](https://ewanvalentine.io/microservices-in-golang-part-1/)
 - [Building-high-performance-apis-in-go-using-grpc-and-protocol-buffers](https://medium.com/@shijuvar/building-high-performance-apis-in-go-using-grpc-and-protocol-buffers-2eda5b80771b)
