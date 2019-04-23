@@ -4,6 +4,9 @@ services:
   consignment-cli:
     build: ./consignment-cli
     image: consignment-cli
+    depends_on: 
+      - consignment-service
+      - vessel-service
 
   consignment-service:
     build: ./consignment-service
