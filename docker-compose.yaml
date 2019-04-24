@@ -23,3 +23,8 @@ services:
       - 50052:50051
     environment:
       MICRO_ADDRESS: ":50051"
+
+  datasource:
+    image: mongo
+    ports: 
+      - 27017:2017
