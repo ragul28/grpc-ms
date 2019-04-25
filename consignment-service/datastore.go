@@ -10,7 +10,7 @@ import (
 
 func createClient(uri string) (*mongo.Client, error) {
 
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	return mongo.Connect(ctx, options.Client().ApplyURI(uri))
 }
