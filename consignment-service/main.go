@@ -19,7 +19,7 @@ const (
 func main() {
 	// setup go-micro
 	srv := micro.NewService(
-		micro.Name("consignment.service"),
+		micro.Name("gomicro.consignment.service"),
 	)
 
 	srv.Init()
@@ -42,7 +42,7 @@ func main() {
 	consignmentCollection := client.Database("grpc-ms").Collection("consignments")
 
 	repository := &MongoRepository{consignmentCollection}
-	vesselClient := vesselProto.NewVesselServiceClient("vessel.service", srv.Client())
+	vesselClient := vesselProto.NewVesselServiceClient("gomicro.vessel.service", srv.Client())
 	h := &handler{repository, vesselClient}
 
 	// Register handler
