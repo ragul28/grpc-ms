@@ -2,65 +2,73 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"log"
+	"os"
 
 	pb "github.com/grpc-ms/vessel-service/proto/vessel"
 	"github.com/micro/go-micro"
 )
 
-type Repository interface {
-	FindAvailable(*pb.Specification) (*pb.Vessel, error)
-}
+const (
+	defaultHost = "localhost:27017"
+)
 
-type VesselRepository struct {
-	vessels []*pb.Vessel
-}
-
-//FindAvailable - checks weight spec
-func (repo *VesselRepository) FindAvailable(spec *pb.Specification) (*pb.Vessel, error) {
-
-	for _, vessel := range repo.vessels {
-		if spec.Capacity <= vessel.Capacity && spec.MaxWeight <= vessel.MaxWeight {
-			return vessel, nil
-		}
+func createDummyData(repo repository) {
+	vessels := []*pb.Vessel{
+		{Id: "vessel001", Name: "Kane's Salty Secret", MaxWeight: 200000, Capacity: 500},
 	}
-	return nil, errors.New("No vessel found by that spec")
+	for _, v := range vessels {
+		repo.Create(v)
+	}
 }
 
-//grpc service hadler
-type service struct {
-	repo Repository
-}
+func checkFindAv(repo repository) {
 
-func (s *service) FindAvailable(ctx context.Context, req *pb.Specification, res *pb.Response) error {
+	vesselRes, err := repo.FindAvailable(&pb.Specification{
+		MaxWeight: int32(55000),
+		Capacity:  int32(3),
+	})
+	log.Printf("Found vessel: %+v\n", vesselRes)
 
-	// Find the next available vessel
-	vessel, err := s.repo.FindAvailable(req)
 	if err != nil {
-		return err
+		fmt.Println(err)
 	}
-
-	// set vessel as res
-	res.Vessel = vessel
-	return nil
 }
 
 func main() {
-	vessels := []*pb.Vessel{
-		&pb.Vessel{Id: "vessel001", Name: "Boaty McBoatface", MaxWeight: 200000, Capacity: 500},
-	}
-
-	repo := &VesselRepository{vessels}
-
 	srv := micro.NewService(
 		micro.Name("vessel.service"),
 	)
 
 	srv.Init()
 
-	// Register handler
-	pb.RegisterVesselServiceHandler(srv.Server(), &service{repo})
+	uri := os.Getenv("DB_HOST")
+	if uri == "" {
+		uri = "mongodb://" + defaultHost
+	}
+
+	client, err := CreateClient(uri)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	err = client.Ping(context.TODO(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("DB connected at", uri)
+	defer client.Disconnect(context.TODO())
+
+	vesselCollection := client.Database("grpc-ms").Collection("vessel")
+	repository := &VesselRepository{
+		vesselCollection,
+	}
+
+	createDummyData(repository)
+
+	pb.RegisterVesselServiceHandler(srv.Server(), &handler{repository})
 
 	if err := srv.Run(); err != nil {
 		fmt.Println(err)
