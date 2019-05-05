@@ -8,16 +8,29 @@ written in golang.
 ### Microservices
 Container management system,
 -   consignments
--   inventory
--   users
--   authentication
--   roles
+-   users & authentication
 -   vessels
+-   consignments & user cli
 
-### Building
+
+### Docker Build  
+
+1. Build all the microservices using make file in respective dir 
+    ```sh
+    make build
+    ```
+2. Then Build docker with docker-compose
+    ```sh
+    docker-compose build
+    ```
+3. Run all the microservices using docker-compose 
+    ```sh
+    docker-compose up 
+    ```
+
+> Build Info
 - To build inside gopath use GO111MODULE=on environment variable; to build outside gopath unset GO111MODULE or set to GO111MODULE=auto.
-
-- To run on alpine linux container build go-binary with CGO_ENABLED=0 flag set. 
+- To run on alpine linux container build go-binary with CGO_ENABLED=0 flag set.
 
 ### Reference 
 - Tutorial - [ Microservices in golang by Ewan Valentine ](https://ewanvalentine.io/microservices-in-golang-part-1/)
