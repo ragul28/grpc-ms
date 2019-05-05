@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	port        = ":50051"
 	defaultHost = "localhost:27017"
 )
 
@@ -25,15 +24,19 @@ func main() {
 
 	srv.Init()
 
+	//Get database host
 	uri := os.Getenv("DB_HOST")
 	if uri == "" {
-		uri = defaultHost
+		uri = "mongodb://" + defaultHost
 	}
 
+	//create mongodb client
 	client, err := createClient(uri)
 	if err != nil {
 		log.Panic(err)
 	}
+
+	log.Println("DB connected at", uri)
 	defer client.Disconnect(context.TODO())
 
 	consignmentCollection := client.Database("grpc-ms").Collection("consignments")
