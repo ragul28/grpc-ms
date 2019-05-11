@@ -1,6 +1,7 @@
 consignment-service/consignment-service
 consignment-cli/consignment-cli
 vessel-service/vessel-service
+user-service/user-service
 tmp/
 Cheacklist.md
 .vscode/
