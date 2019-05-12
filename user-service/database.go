@@ -5,19 +5,20 @@ import (
 	"os"
 
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 func CreateConnection() (*gorm.DB, error) {
-	// postgras db connection vars
+	// postgres db connection vars
 	host := getEnv("DB_HOST", "localhost")
-	user := getEnv("DB_USER", "")
-	dbName := getEnv("DB_NAME", "")
+	user := getEnv("DB_USER", "postgres")
+	dbName := getEnv("DB_NAME", "postgres")
 	password := getEnv("DB_PASSWORD", "")
 
 	return gorm.Open(
-		"postgras",
+		"postgres",
 		fmt.Sprintf(
-			"postgras://%s:%s@%s/%s?sslmode=disable",
+			"postgres://%s:%s@%s/%s?sslmode=disable",
 			user, password, host, dbName,
 		),
 	)

@@ -43,9 +43,9 @@ services:
     environment:
       MICRO_ADDRESS: ":50051"
       DB_HOST: "database"
-      DB_NAME: "postgras"
-      DB_USER: "postgras"
-      DB_PASSWORD: "postgras"
+      DB_NAME: "postgres"
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres"
     depends_on: 
       - datastore
 
@@ -54,5 +54,5 @@ services:
     ports: 
       - 5432:5432
     environment:
-      POSTGRES_PASSWORD: "postgras"
+      POSTGRES_PASSWORD: "postgres"
       
