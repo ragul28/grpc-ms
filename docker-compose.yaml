@@ -34,3 +34,25 @@ services:
     image: mongo:4.0
     ports: 
       - 27017:27017
+
+  user-service:
+    build: ./user-service
+    image: user-service
+    ports:
+      - 50053:50051
+    environment:
+      MICRO_ADDRESS: ":50051"
+      DB_HOST: "database"
+      DB_NAME: "postgras"
+      DB_USER: "postgras"
+      DB_PASSWORD: "postgras"
+    depends_on: 
+      - datastore
+
+  database:
+    image: postgres:11-alpine
+    ports: 
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: "postgras"
+      
