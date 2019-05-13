@@ -47,7 +47,7 @@ services:
       DB_USER: "postgres"
       DB_PASSWORD: "postgres"
     depends_on: 
-      - datastore
+      - database
 
   database:
     image: postgres:11-alpine
@@ -55,4 +55,9 @@ services:
       - 5432:5432
     environment:
       POSTGRES_PASSWORD: "postgres"
-      
+
+  user-cli:
+    build: ./user-cli
+    image: user-cli
+    depends_on: 
+      - user-service
