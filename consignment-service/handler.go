@@ -22,10 +22,10 @@ func (s *handler) CreateConsignment(ctx context.Context, req *pb.Consignment, re
 		MaxWeight: req.Weight,
 		Capacity:  int32(len(req.Containers)),
 	})
-	log.Printf("Found vessel: %s \n", vesselResponse.Vessel.Name)
 	if err != nil {
 		return err
 	}
+	log.Printf("Found vessel: %s \n", vesselResponse.Vessel.Name)
 
 	//set VesselID from vesselsrv
 	req.VesselId = vesselResponse.Vessel.Id
