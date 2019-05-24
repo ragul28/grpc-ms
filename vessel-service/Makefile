@@ -1,5 +1,5 @@
 build:
-	protoc -I. --go_out=plugins=micro:. \
+	protoc -I. --go_out=plugins=grpc:. \
 	  proto/vessel/vessel.proto
 
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build 

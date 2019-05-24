@@ -4,13 +4,16 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"os"
 
 	pb "github.com/grpc-ms/vessel-service/proto/vessel"
-	"github.com/micro/go-micro"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 const (
+	port        = ":50051"
 	defaultHost = "localhost:27017"
 )
 
@@ -37,11 +40,12 @@ func checkFindAv(repo repository) {
 }
 
 func main() {
-	srv := micro.NewService(
-		micro.Name("gomicro.vessel.service"),
-	)
 
-	srv.Init()
+	lis, err := net.Listen("tcp", port)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	s := grpc.NewServer()
 
 	uri := os.Getenv("DB_HOST")
 	if uri == "" {
@@ -67,10 +71,13 @@ func main() {
 	}
 
 	createDummyData(repository)
+	checkFindAv(repository)
+	pb.RegisterVesselServiceServer(s, &handler{repository})
 
-	pb.RegisterVesselServiceHandler(srv.Server(), &handler{repository})
+	reflection.Register(s)
 
-	if err := srv.Run(); err != nil {
-		fmt.Println(err)
+	log.Println("Running on port:", port)
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
 	}
 }
