@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	port        = ":50051"
+	port        = ":50052"
 	defaultHost = "localhost:27017"
 )
 
@@ -71,7 +71,7 @@ func main() {
 	}
 
 	createDummyData(repository)
-	checkFindAv(repository)
+	//checkFindAv(repository)
 	pb.RegisterVesselServiceServer(s, &handler{repository})
 
 	reflection.Register(s)
