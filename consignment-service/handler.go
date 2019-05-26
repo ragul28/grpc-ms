@@ -15,7 +15,7 @@ type handler struct {
 }
 
 // CreateConsignment - takes context & request as argument
-func (s *handler) CreateConsignment(ctx context.Context, req *pb.Consignment, res *pb.Response) error {
+func (s *handler) CreateConsignment(ctx context.Context, req *pb.Consignment) (*pb.Response, error) {
 
 	// Call vessel client with consignment weight and no. containers
 	vesselResponse, err := s.vesselClient.FindAvailable(ctx, &vesselProto.Specification{
@@ -23,7 +23,7 @@ func (s *handler) CreateConsignment(ctx context.Context, req *pb.Consignment, re
 		Capacity:  int32(len(req.Containers)),
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 	log.Printf("Found vessel: %s \n", vesselResponse.Vessel.Name)
 
@@ -32,23 +32,20 @@ func (s *handler) CreateConsignment(ctx context.Context, req *pb.Consignment, re
 
 	// Save our consignment
 	if err = s.repository.Create(req); err != nil {
-		return err
+		return nil, err
 	}
 
 	// Return `Response` message by protobuf def
-	res.Created = true
-	res.Consignment = req
-	return nil
+	return &pb.Response{Created: true, Consignment: req}, nil
 }
 
 // GetConsignments
-func (s *handler) GetConsignments(ctx context.Context, req *pb.GetRequest, res *pb.Response) error {
+func (s *handler) GetConsignments(ctx context.Context, req *pb.GetRequest) (*pb.Response, error) {
 
 	consignments, err := s.repository.GetAll()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	res.Consignments = consignments
-	return nil
+	return &pb.Response{Consignments: consignments}, nil
 }
