@@ -7,15 +7,16 @@ import (
 	"log"
 	"os"
 
+	"google.golang.org/grpc/metadata"
+
 	pb "github.com/grpc-ms/consignment-service/proto/consignment"
-	micro "github.com/micro/go-micro"
-	"github.com/micro/go-micro/metadata"
+	"google.golang.org/grpc"
 )
 
 const (
-	address         = "localhost:50051"
-	defaultFilename = "consignment.json"
-	defaultToken    = "jwttokenhere"
+	consignmentAddress = "localhost:50051"
+	defaultFilename    = "consignment.json"
+	defaultToken       = "secret-token"
 )
 
 func parseFile(file string) (*pb.Consignment, error) {
@@ -29,10 +30,18 @@ func parseFile(file string) (*pb.Consignment, error) {
 }
 
 func main() {
-	service := micro.NewService(micro.Name("gomicro.consignment.cli"))
-	service.Init()
 
-	client := pb.NewShippingServiceClient("gomicro.consignment.service", service.Client())
+	ConsignmentAddress := os.Getenv("CONSIGMENT_HOST")
+	if ConsignmentAddress == "" {
+		ConsignmentAddress = consignmentAddress
+	}
+	// Set up a connection to the server.
+	conn, err := grpc.Dial(ConsignmentAddress, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("Did not connect: %v", err)
+	}
+	defer conn.Close()
+	client := pb.NewShippingServiceClient(conn)
 
 	// Contact the server and print out its response.
 	file := defaultFilename
@@ -48,9 +57,9 @@ func main() {
 		log.Fatalf("Could not parse file: %v", err)
 	}
 
-	ctx := metadata.NewContext(context.Background(), map[string]string{
+	ctx := metadata.NewOutgoingContext(context.Background(), metadata.New(map[string]string{
 		"token": token,
-	})
+	}))
 
 	r, err := client.CreateConsignment(ctx, consignment)
 	if err != nil {
