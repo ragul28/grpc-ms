@@ -4,6 +4,8 @@ services:
   consignment-cli:
     build: ./consignment-cli
     image: consignment-cli
+    environment:
+      CONSIGMENT_HOST: "consignment-service:50051"
     depends_on: 
       - consignment-service
 
@@ -13,9 +15,11 @@ services:
     ports:
       - 50051:50051
     environment:
-      MICRO_ADDRESS: ":50051"
+      GRPC_PORT: ":50051"
       DISABLE_AUTH: "false"
       DB_HOST: "mongodb://datastore:27017"
+      VESSEL_HOST: "vessel-service:50051"
+      USER_HOST: "user-service:50051"
     depends_on: 
       - datastore
       - vessel-service
@@ -27,7 +31,7 @@ services:
     ports:
       - 50052:50051
     environment:
-      MICRO_ADDRESS: ":50051"
+      GRPC_PORT: ":50051"
       DB_HOST: "mongodb://datastore:27017"
     depends_on: 
       - datastore
@@ -43,7 +47,7 @@ services:
     ports:
       - 50053:50051
     environment:
-      MICRO_ADDRESS: ":50051"
+      GRPC_PORT: ":50051"
       DB_HOST: "database"
       DB_NAME: "postgres"
       DB_USER: "postgres"
@@ -61,5 +65,7 @@ services:
   user-cli:
     build: ./user-cli
     image: user-cli
+    environment:
+      USER_HOST: "user-service:50051"
     depends_on: 
       - user-service
