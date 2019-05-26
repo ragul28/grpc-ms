@@ -5,17 +5,26 @@ import (
 	"log"
 	"os"
 
-	microclient "github.com/micro/go-micro/client"
-	"github.com/micro/go-micro/cmd"
-
 	pb "github.com/grpc-ms/user-service/proto/user"
+	"google.golang.org/grpc"
+)
+
+const (
+	userAddress = "localhost:50053"
 )
 
 func main() {
 
-	cmd.Init()
-
-	client := pb.NewUserServiceClient("gomicro.user.service", microclient.DefaultClient)
+	UserAddress := os.Getenv("USER_HOST")
+	if UserAddress == "" {
+		UserAddress = userAddress
+	}
+	conn, err := grpc.Dial(UserAddress, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("Did not connect: %v", err)
+	}
+	defer conn.Close()
+	client := pb.NewUserServiceClient(conn)
 
 	name := "Tony Stark"
 	email := "Tony.stark@email.com"
