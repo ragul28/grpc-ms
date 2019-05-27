@@ -15,7 +15,7 @@ func main() {
 
 	cmd.Init()
 
-	client := pb.NewUserServiceClient("gomicro.user.service", microclient.DefaultClient)
+	client := pb.NewUserServiceClient("go.micro.srv.user", microclient.DefaultClient)
 
 	name := "Tony Stark"
 	email := "Tony.stark@email.com"

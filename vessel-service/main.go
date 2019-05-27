@@ -38,7 +38,7 @@ func checkFindAv(repo repository) {
 
 func main() {
 	srv := micro.NewService(
-		micro.Name("gomicro.vessel.service"),
+		micro.Name("go.micro.srv.vessel"),
 	)
 
 	srv.Init()

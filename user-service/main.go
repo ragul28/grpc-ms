@@ -24,7 +24,7 @@ func main() {
 	tokenService := &TokenService{repo}
 
 	srv := micro.NewService(
-		micro.Name("gomicro.user.service"),
+		micro.Name("go.micro.srv.user"),
 	)
 
 	srv.Init()

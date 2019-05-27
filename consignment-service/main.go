@@ -24,7 +24,7 @@ const (
 func main() {
 	// setup go-micro
 	srv := micro.NewService(
-		micro.Name("gomicro.consignment.service"),
+		micro.Name("go.micro.srv.consignment"),
 		micro.Version("latest"),
 		//auth middleware
 		micro.WrapHandler(AuthWrapper),
@@ -50,7 +50,7 @@ func main() {
 	consignmentCollection := session.Database("grpc-ms").Collection("consignments")
 
 	repository := &MongoRepository{consignmentCollection}
-	vesselClient := vesselProto.NewVesselServiceClient("gomicro.vessel.service", srv.Client())
+	vesselClient := vesselProto.NewVesselServiceClient("go.micro.srv.vessel", srv.Client())
 	h := &handler{repository, vesselClient}
 
 	// Register handler
@@ -79,7 +79,7 @@ func AuthWrapper(fn server.HandlerFunc) server.HandlerFunc {
 		token := meta["Token"]
 		log.Println("Authenticating with token: ", token)
 
-		authClient := userProto.NewUserServiceClient("gomicro.user.service", client.DefaultClient)
+		authClient := userProto.NewUserServiceClient("go.micro.srv.user", client.DefaultClient)
 		authResp, err := authClient.ValidateToken(ctx, &userProto.Token{
 			Token: token,
 		})
