@@ -2,6 +2,6 @@ FROM alpine:latest
 
 RUN mkdir /app
 WORKDIR /app
-COPY user-cli .
+COPY client-cli .
 
-ENTRYPOINT ["./user-cli"]
+ENTRYPOINT ["./client-cli"]
