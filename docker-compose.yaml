@@ -1,14 +1,6 @@
 version: '3.1'
 services:
 
-  consignment-cli:
-    build: ./consignment-cli
-    image: consignment-cli
-    environment:
-      CONSIGMENT_HOST: "consignment-service:50051"
-    depends_on: 
-      - consignment-service
-
   consignment-service:
     build: ./consignment-service
     image: consignment-service
@@ -62,10 +54,12 @@ services:
     environment:
       POSTGRES_PASSWORD: "postgres"
 
-  user-cli:
-    build: ./user-cli
-    image: user-cli
+  client-cli:
+    build: ./client-cli
+    image: client-cli
     environment:
       USER_HOST: "user-service:50051"
+      CONSIGMENT_HOST: "consignment-service:50051"
     depends_on: 
       - user-service
+      - consignment-service
