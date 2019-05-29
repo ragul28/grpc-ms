@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"io/ioutil"
 	"log"
 	"os"
@@ -17,13 +18,20 @@ import (
 const (
 	consignmentAddress = "localhost:50051"
 	userAddress        = "localhost:50053"
-	defaultFilename    = "consignment.json"
 )
+
+var filename = flag.String("filename", "consignment.json", "the consignment json file")
+var name = flag.String("name", "Tony Stark", "name of person")
+var email = flag.String("email", "Tony.stark@email.com", "email of person")
+var password = flag.String("password", "iorn@man", "password")
+var company = flag.String("company", "Stark Industries", "company")
 
 func main() {
 
 	ConsignmentAddress := getEnv("CONSIGMENT_HOST", consignmentAddress)
 	UserAddress := getEnv("USER_HOST", userAddress)
+
+	flag.Parse()
 
 	// setup connection to userservice
 	conn, err := grpc.Dial(UserAddress, grpc.WithInsecure())
@@ -51,18 +59,13 @@ func main() {
 
 func userAuthCli(client userpb.UserServiceClient) (token string) {
 
-	name := "Tony Stark"
-	email := "Tony.stark@email.com"
-	password := "iorn@man"
-	company := "Stark Industries"
-
-	log.Println(name, email, password)
+	log.Println(*name, *email, *password)
 
 	r, err := client.Create(context.TODO(), &userpb.User{
-		Name:     name,
-		Email:    email,
-		Password: password,
-		Company:  company,
+		Name:     *name,
+		Email:    *email,
+		Password: *password,
+		Company:  *company,
 	})
 	if err != nil {
 		log.Fatalf("Could not create: %v", err)
@@ -78,12 +81,12 @@ func userAuthCli(client userpb.UserServiceClient) (token string) {
 	}
 
 	authRes, err := client.Auth(context.TODO(), &userpb.User{
-		Email:    email,
-		Password: password,
+		Email:    *email,
+		Password: *password,
 	})
 
 	if err != nil {
-		log.Fatalf("Could't authenticate user: %s error: %v\n", email, err)
+		log.Fatalf("Could't authenticate user: %s error: %v\n", *email, err)
 	}
 
 	log.Printf("Your access token: %s\n", authRes.Token)
@@ -91,8 +94,7 @@ func userAuthCli(client userpb.UserServiceClient) (token string) {
 }
 
 func consmtSrvCli(client pb.ShippingServiceClient, token string) (err error) {
-	consignment, err := parseFile(defaultFilename)
-
+	consignment, err := parseFile(*filename)
 	if err != nil {
 		log.Fatalf("Could not parse file: %v", err)
 	}
