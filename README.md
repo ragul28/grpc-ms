@@ -10,7 +10,7 @@ Container management system,
 -   consignments
 -   users & authentication
 -   vessels
--   consignments & user cli
+-   client cli
 
 
 ### Docker Build  

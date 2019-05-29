@@ -3,6 +3,7 @@ consignment-cli/consignment-cli
 vessel-service/vessel-service
 user-service/user-service
 user-cli/user-cli
+client-cli/client-cli
 
 tmp/
 Cheacklist.md
