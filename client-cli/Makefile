@@ -1,7 +1,7 @@
 build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
 
-	docker build -t consignment-cli .
+	docker build -t client-cli .
 
 run:
-	docker run consignment-cli
+	docker run client-cli
