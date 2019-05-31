@@ -57,6 +57,7 @@ func main() {
 	}
 }
 
+// userAuth func to get token
 func userAuthCli(client userpb.UserServiceClient) (token string) {
 
 	log.Println(*name, *email, *password)
@@ -93,6 +94,7 @@ func userAuthCli(client userpb.UserServiceClient) (token string) {
 	return authRes.Token
 }
 
+// Helper func to call consignment srv
 func consmtSrvCli(client pb.ShippingServiceClient, token string) (err error) {
 	consignment, err := parseFile(*filename)
 	if err != nil {
