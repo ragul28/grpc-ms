@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
 	pb "github.com/grpc-ms/user-service/proto/user"
 )
@@ -43,6 +44,8 @@ func main() {
 	tokenService := &TokenService{repo}
 
 	pb.RegisterUserServiceServer(s, &handler{repo, tokenService})
+
+	reflection.Register(s)
 
 	log.Println("Running on port:", Port)
 	if err := s.Serve(lis); err != nil {
