@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 
@@ -86,10 +87,14 @@ func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServe
 	// Check incoming context for metadata for jwt token
 	meta, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return nil, errors.New("no auth meta-data found in request")
+		return nil, grpc.Errorf(codes.Unauthenticated, "missing context metadata")
 	}
 
-	token := meta["token"][0]
+	if len(meta["authorization"]) != 1 {
+		return nil, grpc.Errorf(codes.Unauthenticated, "invalid token")
+	}
+
+	token := meta["authorization"][0]
 	log.Println("Authenticating with token: ", token)
 	// authResp, err := TokeValidate(token)
 

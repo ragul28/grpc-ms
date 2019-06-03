@@ -102,7 +102,7 @@ func consmtSrvCli(client pb.ShippingServiceClient, token string) (err error) {
 	}
 
 	ctx := metadata.NewOutgoingContext(context.Background(), metadata.New(map[string]string{
-		"token": token,
+		"authorization": token,
 	}))
 
 	r, err := client.CreateConsignment(ctx, consignment)
