@@ -1,10 +1,14 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"os"
 
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -47,8 +51,25 @@ func main() {
 
 	reflection.Register(s)
 
+	go runHttp(fmt.Sprintf("localhost%s", Port))
+
 	log.Println("Running on port:", Port)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+}
+
+func runHttp(clientAddr string) {
+
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	mux := runtime.NewServeMux()
+	opts := []grpc.DialOption{grpc.WithInsecure()}
+	if err := pb.RegisterUserServiceHandlerFromEndpoint(ctx, mux, clientAddr, opts); err != nil {
+		log.Fatalf("Failed to start HTTP server: %v", err)
+	}
+
+	http.ListenAndServe(":6000", mux)
 }
