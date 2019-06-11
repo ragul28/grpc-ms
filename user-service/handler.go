@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"log"
 
-	pb "github.com/grpc-ms/user-service/proto/user"
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+
+	pb "github.com/grpc-ms/user-service/proto/user"
 )
 
 type handler struct {
@@ -16,6 +19,12 @@ type handler struct {
 }
 
 func (s *handler) Get(ctx context.Context, req *pb.User) (*pb.Response, error) {
+
+	if req.Id == "" {
+		return nil, grpc.Errorf(codes.InvalidArgument, "userid cannot be empty")
+	}
+	log.Println("Get userid:", req.Id)
+
 	user, err := s.repo.Get(req.Id)
 	if err != nil {
 		return nil, err
