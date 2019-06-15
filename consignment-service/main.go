@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"os"
 
 	"google.golang.org/grpc"
@@ -13,6 +15,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	// Import the generated protobuf code
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	pb "github.com/grpc-ms/consignment-service/proto/consignment"
 	userProto "github.com/grpc-ms/user-service/proto/user"
 	vesselProto "github.com/grpc-ms/vessel-service/proto/vessel"
@@ -65,11 +68,28 @@ func main() {
 
 	reflection.Register(s)
 
+	go runHttp(fmt.Sprintf("localhost%s", Port))
+
 	//Run grpc server
 	log.Println("Running on port:", Port)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+}
+
+func runHttp(clientAddr string) {
+
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	mux := runtime.NewServeMux()
+	opts := []grpc.DialOption{grpc.WithInsecure()}
+	if err := pb.RegisterShippingServiceHandlerFromEndpoint(ctx, mux, clientAddr, opts); err != nil {
+		log.Fatalf("Failed to start HTTP server: %v", err)
+	}
+
+	http.ListenAndServe(":6001", mux)
 }
 
 //Auth middleware to validate token in consignment svc api
