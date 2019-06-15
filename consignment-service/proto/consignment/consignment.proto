@@ -3,11 +3,22 @@ syntax = "proto3";
 
 package consignment;
 
+import "google/api/annotations.proto";
+
 service ShippingService {
   // unary rpc
-  rpc CreateConsignment(Consignment) returns (Response) {}
+  rpc CreateConsignment(Consignment) returns (Response) {
+    option (google.api.http) = {
+      post: "/consignment",
+      body: "*"
+    };
+  }
   
-  rpc GetConsignments(GetRequest) returns (Response) {}
+  rpc GetConsignments(GetRequest) returns (Response) {
+    option (google.api.http) = {
+      get: "/consignments",
+    };
+  }
 }
 
 message Consignment {
