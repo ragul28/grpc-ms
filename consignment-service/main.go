@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -15,6 +16,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	// Import the generated protobuf code
+	"github.com/golang/glog"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	pb "github.com/grpc-ms/consignment-service/proto/consignment"
 	userProto "github.com/grpc-ms/user-service/proto/user"
@@ -89,7 +91,16 @@ func runHttp(clientAddr string) {
 		log.Fatalf("Failed to start HTTP server: %v", err)
 	}
 
-	http.ListenAndServe(":6001", mux)
+	addr := ":8081"
+
+	s := &http.Server{
+		Addr:    addr,
+		Handler: allowCORS(mux),
+	}
+
+	if err := s.ListenAndServe(); err != http.ErrServerClosed {
+		log.Printf("Failed to listen and serve: %v", err)
+	}
 }
 
 //Auth middleware to validate token in consignment svc api
@@ -149,4 +160,30 @@ func TokeValidate(token string) (bool, error) {
 		return false, errors.New("error missing token")
 	}
 	return token == "secret-token", nil
+}
+
+// allowCORS allows Cross Origin Resoruce Sharing from any origin.
+// Don't do this without consideration in production systems.
+func allowCORS(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if origin := r.Header.Get("Origin"); origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			if r.Method == "OPTIONS" && r.Header.Get("Access-Control-Request-Method") != "" {
+				preflightHandler(w, r)
+				return
+			}
+		}
+		h.ServeHTTP(w, r)
+	})
+}
+
+// preflightHandler adds the necessary headers in order to serve
+// CORS from any origin using the methods "GET", "HEAD", "POST", "PUT", "DELETE"
+// We insist, don't do this without consideration in production systems.
+func preflightHandler(w http.ResponseWriter, r *http.Request) {
+	headers := []string{"Content-Type", "Accept"}
+	w.Header().Set("Access-Control-Allow-Headers", strings.Join(headers, ","))
+	methods := []string{"GET", "HEAD", "POST", "PUT", "DELETE"}
+	w.Header().Set("Access-Control-Allow-Methods", strings.Join(methods, ","))
+	glog.Infof("preflight request for %s", r.URL.Path)
 }

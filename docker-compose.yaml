@@ -6,7 +6,7 @@ services:
     image: consignment-service
     ports:
       - 50051:50051
-      - 6001:6001
+      - 8081:8081
     environment:
       GRPC_PORT: ":50051"
       DISABLE_AUTH: "false"
@@ -39,7 +39,7 @@ services:
     image: user-service
     ports:
       - 50053:50051
-      - 6000:6000
+      - 8080:8080
     environment:
       GRPC_PORT: ":50051"
       DB_HOST: "database"
