@@ -18,6 +18,7 @@ type handler struct {
 	tokenService Authable
 }
 
+// Get user by id
 func (s *handler) Get(ctx context.Context, req *pb.User) (*pb.Response, error) {
 
 	if req.Id == "" {
@@ -33,6 +34,7 @@ func (s *handler) Get(ctx context.Context, req *pb.User) (*pb.Response, error) {
 	return &pb.Response{User: user}, nil
 }
 
+// Get all user list
 func (s *handler) GetAll(ctx context.Context, req *pb.Request) (*pb.Response, error) {
 	users, err := s.repo.GetAll()
 	if err != nil {
@@ -42,8 +44,14 @@ func (s *handler) GetAll(ctx context.Context, req *pb.Request) (*pb.Response, er
 	return &pb.Response{Users: users}, nil
 }
 
+// Auth user by email & pass
 func (s *handler) Auth(ctx context.Context, req *pb.User) (*pb.Token, error) {
+
 	log.Println("Logging in with:", req.Email, req.Password)
+	if req.Password == "" || req.Email == "" {
+		return nil, grpc.Errorf(codes.InvalidArgument, "email or password cannot be empty")
+	}
+
 	user, err := s.repo.GetByEmail(req.Email)
 	log.Println(user)
 	if err != nil {
@@ -63,9 +71,14 @@ func (s *handler) Auth(ctx context.Context, req *pb.User) (*pb.Token, error) {
 	return &pb.Token{Token: token}, nil
 }
 
+// Create user & password hash
 func (s *handler) Create(ctx context.Context, req *pb.User) (*pb.Response, error) {
 
 	log.Println("Creating user:", req)
+
+	if req.Password == "" || req.Name == "" || req.Email == "" {
+		return nil, grpc.Errorf(codes.InvalidArgument, "error empty email, user or password")
+	}
 
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -85,6 +98,7 @@ func (s *handler) Create(ctx context.Context, req *pb.User) (*pb.Response, error
 	return &pb.Response{User: req, Token: &pb.Token{Token: token}}, nil
 }
 
+//Validate jwt token
 func (s *handler) ValidateToken(ctx context.Context, req *pb.Token) (*pb.Token, error) {
 
 	claims, err := s.tokenService.Decode(req.Token)
@@ -93,7 +107,7 @@ func (s *handler) ValidateToken(ctx context.Context, req *pb.Token) (*pb.Token, 
 	}
 
 	if claims.User.Id == "" {
-		return nil, errors.New("Invalid user")
+		return nil, grpc.Errorf(codes.InvalidArgument, "Invalid user")
 	}
 
 	return &pb.Token{Valid: true}, nil
