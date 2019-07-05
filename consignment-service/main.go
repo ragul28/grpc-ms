@@ -125,7 +125,7 @@ func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServe
 		return nil, grpc.Errorf(codes.Unauthenticated, "invalid token")
 	}
 
-	token := meta["authorization"][0]
+	token := strings.TrimPrefix(meta["authorization"][0], "Bearer ")
 	log.Println("Authenticating with token: ", token)
 	// authResp, err := TokeValidate(token)
 
