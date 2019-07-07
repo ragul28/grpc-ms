@@ -1,11 +1,11 @@
-package main
+package service
 
 import (
-	pb "github.com/grpc-ms/user-service/proto/user"
+	pb "github.com/grpc-ms/user-service/api/proto/user"
 	"github.com/jinzhu/gorm"
 )
 
-type repository interface {
+type Repository interface {
 	GetAll() ([]*pb.User, error)
 	Get(id string) (*pb.User, error)
 	Create(user *pb.User) error
@@ -13,12 +13,12 @@ type repository interface {
 }
 
 type UserRepository struct {
-	db *gorm.DB
+	Database *gorm.DB
 }
 
 func (repo *UserRepository) GetAll() ([]*pb.User, error) {
 	var users []*pb.User
-	if err := repo.db.Find(&users).Error; err != nil {
+	if err := repo.Database.Find(&users).Error; err != nil {
 		return nil, err
 	}
 	return users, nil
@@ -29,14 +29,14 @@ func (repo *UserRepository) Get(id string) (*pb.User, error) {
 	var user *pb.User
 	user = &pb.User{Id: id}
 
-	if err := repo.db.First(&user).Error; err != nil {
+	if err := repo.Database.First(&user).Error; err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
 func (repo *UserRepository) Create(user *pb.User) error {
-	if err := repo.db.Create(user).Error; err != nil {
+	if err := repo.Database.Create(user).Error; err != nil {
 		return err
 	}
 	return nil
@@ -44,7 +44,7 @@ func (repo *UserRepository) Create(user *pb.User) error {
 
 func (repo *UserRepository) GetByEmail(email string) (*pb.User, error) {
 	user := &pb.User{}
-	if err := repo.db.Where("email = ?", email).
+	if err := repo.Database.Where("email = ?", email).
 		First(&user).Error; err != nil {
 		return nil, err
 	}

@@ -1,4 +1,4 @@
-package main
+package rpc
 
 import (
 	"context"
@@ -6,27 +6,29 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/grpc-ms/user-service/pkg/service"
+
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 
-	pb "github.com/grpc-ms/user-service/proto/user"
+	pb "github.com/grpc-ms/user-service/api/proto/user"
 )
 
-type handler struct {
-	repo         repository
-	tokenService Authable
+type Handler struct {
+	Repo         service.Repository
+	TokenService service.Authable
 }
 
 // Get user by id
-func (s *handler) Get(ctx context.Context, req *pb.User) (*pb.Response, error) {
+func (s *Handler) Get(ctx context.Context, req *pb.User) (*pb.Response, error) {
 
 	if req.Id == "" {
 		return nil, grpc.Errorf(codes.InvalidArgument, "userid cannot be empty")
 	}
 	log.Println("Get userid:", req.Id)
 
-	user, err := s.repo.Get(req.Id)
+	user, err := s.Repo.Get(req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -35,8 +37,8 @@ func (s *handler) Get(ctx context.Context, req *pb.User) (*pb.Response, error) {
 }
 
 // Get all user list
-func (s *handler) GetAll(ctx context.Context, req *pb.Request) (*pb.Response, error) {
-	users, err := s.repo.GetAll()
+func (s *Handler) GetAll(ctx context.Context, req *pb.Request) (*pb.Response, error) {
+	users, err := s.Repo.GetAll()
 	if err != nil {
 		return nil, err
 	}
@@ -45,14 +47,14 @@ func (s *handler) GetAll(ctx context.Context, req *pb.Request) (*pb.Response, er
 }
 
 // Auth user by email & pass
-func (s *handler) Auth(ctx context.Context, req *pb.User) (*pb.Token, error) {
+func (s *Handler) Auth(ctx context.Context, req *pb.User) (*pb.Token, error) {
 
 	log.Println("Logging in with:", req.Email, req.Password)
 	if req.Password == "" || req.Email == "" {
 		return nil, grpc.Errorf(codes.InvalidArgument, "email or password cannot be empty")
 	}
 
-	user, err := s.repo.GetByEmail(req.Email)
+	user, err := s.Repo.GetByEmail(req.Email)
 	log.Println(user)
 	if err != nil {
 		return nil, err
@@ -63,7 +65,7 @@ func (s *handler) Auth(ctx context.Context, req *pb.User) (*pb.Token, error) {
 		return nil, err
 	}
 
-	token, err := s.tokenService.Encode(user)
+	token, err := s.TokenService.Encode(user)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +74,7 @@ func (s *handler) Auth(ctx context.Context, req *pb.User) (*pb.Token, error) {
 }
 
 // Create user & password hash
-func (s *handler) Create(ctx context.Context, req *pb.User) (*pb.Response, error) {
+func (s *Handler) Create(ctx context.Context, req *pb.User) (*pb.Response, error) {
 
 	log.Println("Creating user:", req)
 
@@ -86,11 +88,11 @@ func (s *handler) Create(ctx context.Context, req *pb.User) (*pb.Response, error
 	}
 
 	req.Password = string(hashedPass)
-	if err := s.repo.Create(req); err != nil {
+	if err := s.Repo.Create(req); err != nil {
 		return nil, errors.New(fmt.Sprintf("error creating user: %v", err))
 	}
 
-	token, err := s.tokenService.Encode(req)
+	token, err := s.TokenService.Encode(req)
 	if err != nil {
 		return nil, err
 	}
@@ -99,9 +101,9 @@ func (s *handler) Create(ctx context.Context, req *pb.User) (*pb.Response, error
 }
 
 //Validate jwt token
-func (s *handler) ValidateToken(ctx context.Context, req *pb.Token) (*pb.Token, error) {
+func (s *Handler) ValidateToken(ctx context.Context, req *pb.Token) (*pb.Token, error) {
 
-	claims, err := s.tokenService.Decode(req.Token)
+	claims, err := s.TokenService.Decode(req.Token)
 	if err != nil {
 		return nil, err
 	}

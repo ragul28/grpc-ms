@@ -14,7 +14,10 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	pb "github.com/grpc-ms/user-service/proto/user"
+	pb "github.com/grpc-ms/user-service/api/proto/user"
+	"github.com/grpc-ms/user-service/pkg/database"
+	"github.com/grpc-ms/user-service/pkg/http/rpc"
+	"github.com/grpc-ms/user-service/pkg/service"
 )
 
 const (
@@ -34,7 +37,7 @@ func main() {
 
 	s := grpc.NewServer()
 
-	db, err := CreateConnection()
+	db, err := database.CreateConnection()
 	defer db.Close()
 
 	if err != nil {
@@ -46,10 +49,13 @@ func main() {
 	// auto migrate user struct to db
 	db.AutoMigrate(&pb.User{})
 
-	repo := &UserRepository{db}
-	tokenService := &TokenService{repo}
+	repo := &service.UserRepository{Database: db}
+	tokenService := &service.TokenService{TRepo: repo}
 
-	pb.RegisterUserServiceServer(s, &handler{repo, tokenService})
+	pb.RegisterUserServiceServer(s, &rpc.Handler{
+		Repo:         repo,
+		TokenService: tokenService,
+	})
 
 	reflection.Register(s)
 

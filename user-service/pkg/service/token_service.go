@@ -1,11 +1,11 @@
-package main
+package service
 
 import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 
-	pb "github.com/grpc-ms/user-service/proto/user"
+	pb "github.com/grpc-ms/user-service/api/proto/user"
 )
 
 var (
@@ -23,7 +23,7 @@ type Authable interface {
 }
 
 type TokenService struct {
-	repo repository
+	TRepo Repository
 }
 
 // Decode token into token-object
