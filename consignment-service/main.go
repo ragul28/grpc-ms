@@ -19,7 +19,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	pb "github.com/grpc-ms/consignment-service/proto/consignment"
-	userProto "github.com/grpc-ms/user-service/proto/user"
+	userProto "github.com/grpc-ms/user-service/api/proto/user"
 	vesselProto "github.com/grpc-ms/vessel-service/proto/vessel"
 )
 
