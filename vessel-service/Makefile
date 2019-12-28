@@ -11,5 +11,5 @@ run:
 	vessel-service
 
 init:
-	GO111MODULE=on go mod init github.com/grpc-ms/vessel-service
+	GO111MODULE=on go mod init github.com/ragul28/grpc-ms/vessel-service
 	GO111MODULE=on go get -u

@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 
-	pb "github.com/grpc-ms/user-service/proto/user"
+	pb "github.com/ragul28/grpc-ms/user-service/proto/user"
 )
 
 type handler struct {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 
-	pb "github.com/grpc-ms/user-service/proto/user"
+	pb "github.com/ragul28/grpc-ms/user-service/proto/user"
 )
 
 var (

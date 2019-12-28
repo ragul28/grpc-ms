@@ -1,9 +1,9 @@
-# grpc-msa
+# grpc-ms
 
-Microservice architecture project with gRPC and protobuf.
+Exploration gRPC project with Microservice architecture.
 written in golang.
 
-*Stack used* - docker, go-micro, Makefile, docker-compose, mongodb.  
+*Stack used* - grpc, protobuf, docker, go-micro, Makefile, docker-compose, mongodb, postgresql.  
 
 ### Microservices
 Container management system,

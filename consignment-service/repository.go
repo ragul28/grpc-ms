@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	pb "github.com/grpc-ms/consignment-service/proto/consignment"
+	pb "github.com/ragul28/grpc-ms/consignment-service/proto/consignment"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )

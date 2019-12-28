@@ -6,7 +6,7 @@ run:
 	go build && ./consignment-service
 
 init:
-	GO111MODULE=on go mod init github.com/grpc-ms/consignment-service
+	GO111MODULE=on go mod init github.com/ragul28/grpc-ms/consignment-service
 	GO111MODULE=on go get -u
 	#go get -u github.com/golang/protobuf/{proto,protoc-gen-go}
 

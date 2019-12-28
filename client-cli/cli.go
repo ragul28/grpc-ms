@@ -8,8 +8,8 @@ import (
 	"log"
 	"os"
 
-	pb "github.com/grpc-ms/consignment-service/proto/consignment"
-	userpb "github.com/grpc-ms/user-service/proto/user"
+	pb "github.com/ragul28/grpc-ms/consignment-service/proto/consignment"
+	userpb "github.com/ragul28/grpc-ms/user-service/proto/user"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"

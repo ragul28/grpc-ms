@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	pb "github.com/grpc-ms/vessel-service/proto/vessel"
+	pb "github.com/ragul28/grpc-ms/vessel-service/proto/vessel"
 )
 
 const (

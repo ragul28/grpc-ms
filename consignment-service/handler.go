@@ -5,8 +5,8 @@ import (
 	"log"
 
 	// Import the generated protobuf code
-	pb "github.com/grpc-ms/consignment-service/proto/consignment"
-	vesselProto "github.com/grpc-ms/vessel-service/proto/vessel"
+	pb "github.com/ragul28/grpc-ms/consignment-service/proto/consignment"
+	vesselProto "github.com/ragul28/grpc-ms/vessel-service/proto/vessel"
 )
 
 type handler struct {

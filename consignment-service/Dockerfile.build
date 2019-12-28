@@ -3,7 +3,7 @@ FROM golang:alpine as builder
 
 ENV GO111MODULE=on
 RUN apk --no-cache add git
-WORKDIR /src/go/github.com/grpc-ms/consignment-service
+WORKDIR /src/go/github.com/ragul28/grpc-ms/consignment-service
 
 COPY go.mod .
 COPY go.sum .
@@ -18,7 +18,7 @@ FROM alpine:latest
 
 RUN mkdir /app
 WORKDIR /app
-COPY --from=builder /src/go/github.com/grpc-ms/consignment-service .
+COPY --from=builder /src/go/github.com/ragul28/grpc-ms/consignment-service .
 
 CMD ["./consignment-service"]
 EXPOSE 50051

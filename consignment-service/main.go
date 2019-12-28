@@ -18,9 +18,9 @@ import (
 	// Import the generated protobuf code
 	"github.com/golang/glog"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	pb "github.com/grpc-ms/consignment-service/proto/consignment"
-	userProto "github.com/grpc-ms/user-service/proto/user"
-	vesselProto "github.com/grpc-ms/vessel-service/proto/vessel"
+	pb "github.com/ragul28/grpc-ms/consignment-service/proto/consignment"
+	userProto "github.com/ragul28/grpc-ms/user-service/proto/user"
+	vesselProto "github.com/ragul28/grpc-ms/vessel-service/proto/vessel"
 )
 
 const (

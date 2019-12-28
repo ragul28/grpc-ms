@@ -6,7 +6,7 @@ run:
 	go build && ./user-service
 	
 init:
-	GO111MODULE=on go mod init github.com/grpc-ms/user-service
+	GO111MODULE=on go mod init github.com/ragul28/grpc-ms/user-service
 	GO111MODULE=on go get -u
 
 grpcgw:

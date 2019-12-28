@@ -1,4 +1,4 @@
-module github.com/grpc-ms/consignment-service
+module github.com/ragul28/grpc-ms/consignment-service
 
 go 1.12
 

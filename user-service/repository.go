@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "github.com/grpc-ms/user-service/proto/user"
+	pb "github.com/ragul28/grpc-ms/user-service/proto/user"
 	"github.com/jinzhu/gorm"
 )
 
